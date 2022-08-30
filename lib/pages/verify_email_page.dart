@@ -11,24 +11,27 @@ class VerifyEmailPage extends StatefulWidget {
 class _VerifyEmailPageState extends State<VerifyEmailPage> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text('Please verify your email address'),
-          SizedBox(
-            height: 16.0,
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              _verifyEmail();
-            },
-            child: Text('Send'),
-          ),
-        ],
+    return Scaffold(
+      appBar: AppBar(title: Text('Verify Email')),
+      body: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text('Please verify your email address'),
+            SizedBox(
+              height: 16.0,
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                _verifyEmail();
+              },
+              child: Text('Send'),
+            ),
+          ],
+        ),
       ),
     );
   }
