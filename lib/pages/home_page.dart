@@ -2,7 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:my_notes/firebase_options.dart';
-
+import 'package:my_notes/pages/login_page.dart';
+import 'package:my_notes/pages/verify_email_page.dart';
 
 //comment
 class HomePage extends StatelessWidget {
@@ -17,10 +18,9 @@ class HomePage extends StatelessWidget {
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.done:
-                _checkCurrentUser(context);
-                return Container();
+                return // _checkCurrentUser(context);
+                    LoginPage();
               default:
-                // ignore: prefer_const_constructors
                 return Center(
                   child: const CircularProgressIndicator(),
                 );
@@ -35,17 +35,22 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  void _checkCurrentUser(BuildContext context) {
+  Widget _checkCurrentUser(BuildContext context) {
     final FirebaseAuth auth = FirebaseAuth.instance;
     final user = auth.currentUser;
     final bool emailVerified = user?.emailVerified ?? false;
 
+    debugPrint(user?.email);
     if (emailVerified) {
       debugPrint('Veryfied email');
+      return Container(
+        child: Text("Veryfied"),
+      );
     } else {
       debugPrint('Not verified email');
+      return VerifyEmailPage();
     }
 
-    final uid = user?.uid ?? -1;
+    //final uid = user?.uid ?? -1;
   }
 }

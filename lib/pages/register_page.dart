@@ -32,68 +32,61 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Register'),
-      ),
-      body: FutureBuilder(
-          future: _initFireBase(),
-          builder: (context, snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.done:
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      TextField(
-                        keyboardType: TextInputType.emailAddress,
-                        controller: _email,
-                        enableSuggestions: false,
-                        autocorrect: false,
-                        decoration: const InputDecoration(
-                          hintText: 'Email',
-                          border: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(width: 1, color: Colors.black),
-                          ),
+    return FutureBuilder(
+        future: _initFireBase(),
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.done:
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextField(
+                      keyboardType: TextInputType.emailAddress,
+                      controller: _email,
+                      enableSuggestions: false,
+                      autocorrect: false,
+                      decoration: const InputDecoration(
+                        hintText: 'Email',
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(width: 1, color: Colors.black),
                         ),
                       ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      TextField(
-                        controller: _password,
-                        obscureText: true,
-                        enableSuggestions: false,
-                        autocorrect: false,
-                        decoration: const InputDecoration(
-                          hintText: 'Password',
-                          border: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(width: 1, color: Colors.black),
-                          ),
+                    ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    TextField(
+                      controller: _password,
+                      obscureText: true,
+                      enableSuggestions: false,
+                      autocorrect: false,
+                      decoration: const InputDecoration(
+                        hintText: 'Password',
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(width: 1, color: Colors.black),
                         ),
                       ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      ElevatedButton(
-                        onPressed: () async {
-                          _createUser();
-                        },
-                        child: const Text('Register'),
-                      ),
-                    ],
-                  ),
-                );
-              default:
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-            }
-          }),
-    );
+                    ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        _createUser();
+                      },
+                      child: const Text('Register'),
+                    ),
+                  ],
+                ),
+              );
+            default:
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+          }
+        });
   }
 
   void _createUser() async {
