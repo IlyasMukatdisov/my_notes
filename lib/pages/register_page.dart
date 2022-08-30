@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:my_notes/firebase_options.dart';
+import 'package:my_notes/pages/utils/show_snackbar.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -102,12 +103,16 @@ class _RegisterPageState extends State<RegisterPage> {
     debugPrint("Email: $email");
     debugPrint("Password: $password");
 
-    final userCredential = await FirebaseAuth.instance
-        .createUserWithEmailAndPassword(email: email, password: password);
-    debugPrint(userCredential.toString());
+    try {
+      final userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+      debugPrint(userCredential.toString());
+    } on FirebaseAuthException catch (e) {
+      showErrorSnackBar(e, context);
+    }
   }
 
-  Future _initFireBase() {
+  Future _initFireBase() async {
     return Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );

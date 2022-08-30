@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:my_notes/pages/home_page.dart';
+import 'package:my_notes/pages/login_page.dart';
 import 'package:my_notes/pages/register_page.dart';
 
 void main() {
@@ -17,7 +19,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const RegisterPage(),
+      home: const HomePage(),
     );
   }
 }

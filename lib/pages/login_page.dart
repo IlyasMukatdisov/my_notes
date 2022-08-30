@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:my_notes/firebase_options.dart';
+import 'package:my_notes/pages/utils/show_snackbar.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -33,7 +34,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Register'),
+        title: const Text('Login'),
       ),
       body: FutureBuilder(
           future: _initFireBase(),
@@ -81,7 +82,7 @@ class _LoginPageState extends State<LoginPage> {
                         onPressed: () async {
                           _createUser();
                         },
-                        child: const Text('Register'),
+                        child: const Text('Login'),
                       ),
                     ],
                   ),
@@ -97,18 +98,22 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _createUser() async {
-    final email = _email.text;
-    final password = _password.text;
+    final String email = _email.text;
+    final String password = _password.text;
 
     debugPrint("Email: $email");
     debugPrint("Password: $password");
 
-    final userCredential = await FirebaseAuth.instance
-        .createUserWithEmailAndPassword(email: email, password: password);
-    debugPrint(userCredential.toString());
+    try {
+      final userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+      debugPrint(userCredential.toString());
+    } on FirebaseAuthException catch (e) {
+      showErrorSnackBar(e, context);
+    }
   }
 
-  Future _initFireBase() {
+  Future _initFireBase() async {
     return Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
