@@ -2,9 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:my_notes/firebase_options.dart';
-import 'package:my_notes/pages/login_page.dart';
-import 'package:my_notes/pages/notes_page.dart';
-import 'package:my_notes/pages/verify_email_page.dart';
+import 'package:my_notes/pages/login/login_page.dart';
+import 'package:my_notes/pages/notes/notes_page.dart';
+import 'package:my_notes/pages/verify_email/verify_email_page.dart';
 import 'dart:developer' as dev_tools show log;
 
 //comment
@@ -50,7 +50,7 @@ class HomePage extends StatelessWidget {
       return const NotesPage();
     }
 
-    dev_tools.log('${user.email} is verified');
+    dev_tools.log('${user.email} is not verified');
     return const VerifyEmailPage();
 
     //final uid = user?.uid ?? -1;

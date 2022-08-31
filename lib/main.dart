@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:my_notes/constants.dart';
-import 'package:my_notes/pages/home_page.dart';
-import 'package:my_notes/pages/login_page.dart';
-import 'package:my_notes/pages/notes_page.dart';
-import 'package:my_notes/pages/register_page.dart';
+import 'package:my_notes/constants/routes.dart';
+import 'package:my_notes/constants/strings.dart';
+import 'package:my_notes/pages/home/home_page.dart';
+import 'package:my_notes/pages/login/login_page.dart';
+import 'package:my_notes/pages/notes/notes_page.dart';
+import 'package:my_notes/pages/register/register_page.dart';
+import 'package:my_notes/pages/verify_email/verify_email_page.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,10 +16,11 @@ class MyApp extends StatelessWidget {
   MyApp({Key? key}) : super(key: key);
 
   final Map<String, Widget Function(BuildContext)> _routes = {
-    Constants.homePageRoute: (context) => const HomePage(),
-    Constants.loginPageRoute: (context) => const LoginPage(),
-    Constants.registerPageRoute: (context) => const RegisterPage(),
-    Constants.notesPageRoute: (context) => const NotesPage(),
+    Routes.homePageRoute: (context) => const HomePage(),
+    Routes.loginPageRoute: (context) => const LoginPage(),
+    Routes.registerPageRoute: (context) => const RegisterPage(),
+    Routes.notesPageRoute: (context) => const NotesPage(),
+    Routes.verifyEmailRoute: (context) => const VerifyEmailPage(),
   };
 
   //
@@ -26,11 +29,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: Constants.appName,
+      title: Strings.appName,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: Constants.homePageRoute,
+      initialRoute: Routes.homePageRoute,
       routes: _routes,
     );
   }

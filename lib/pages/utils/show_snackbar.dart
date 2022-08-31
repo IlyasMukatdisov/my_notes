@@ -13,8 +13,22 @@ void showSnackBar(String message, BuildContext context) {
   ScaffoldMessenger.of(context).showSnackBar(snackBar);
 }
 
-void showErrorSnackBar(FirebaseAuthException e, BuildContext context) {
-  dev_tools.log(e.code);
-  String errorMessage = e.message ?? 'Unknown Error. Please try again later';
-  showSnackBar(errorMessage, context);
+Future<void> showErrorDialog(BuildContext context, String message) {
+  dev_tools.log(message);
+  return showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: Text('An error occured'),
+        content: Text(message),
+        actions: [
+          TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'))
+        ],
+      );
+    },
+  );
 }

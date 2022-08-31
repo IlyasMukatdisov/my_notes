@@ -3,7 +3,7 @@ import 'dart:developer' as dev_tools show log;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:my_notes/constants.dart';
+import 'package:my_notes/constants/routes.dart';
 import 'package:my_notes/firebase_options.dart';
 import 'package:my_notes/pages/utils/show_snackbar.dart';
 
@@ -94,7 +94,7 @@ class _LoginPageState extends State<LoginPage> {
                         onPressed: () {
                           Navigator.pushNamedAndRemoveUntil(
                             context,
-                            Constants.registerPageRoute,
+                            Routes.registerPageRoute,
                             (route) => false,
                           );
                         },
@@ -122,13 +122,27 @@ class _LoginPageState extends State<LoginPage> {
     dev_tools.log("Password: $password");
 
     try {
-      final userCredential = await FirebaseAuth.instance
+      final user = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
-      Navigator.pushNamedAndRemoveUntil(
-          context, Constants.notesPageRoute, (route) => false);
+      bool isVerified = user.user?.emailVerified ?? false;
+      dev_tools.log("Email verified: $isVerified");
+      if (isVerified) {
+        _goToPage(Routes.notesPageRoute);
+        return;
+      } else {
+        _goToPage(Routes.verifyEmailRoute);
+        return;
+      }
     } on FirebaseAuthException catch (e) {
-      showErrorSnackBar(e, context);
+      showErrorDialog(context, e.message ?? 'Unknown Login Error ${e.code}');
+    } catch (e) {
+      showErrorDialog(context, 'Unknown error: $e');
     }
+  }
+
+  void _goToPage(String route) {
+    Navigator.pushNamedAndRemoveUntil(context, route, (route) => false);
+    return;
   }
 
   Future _initFireBase() async {

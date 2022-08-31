@@ -1,9 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer' as dev_tools show log;
 
-import 'package:my_notes/constants.dart';
+import 'package:my_notes/constants/routes.dart';
 
 class NotesPage extends StatefulWidget {
   const NotesPage({
@@ -30,8 +29,8 @@ class _NotesPageState extends State<NotesPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text("Email Veryfied"),
+          children: const [
+            Text("Notes"),
           ],
         ),
       ),
@@ -73,7 +72,7 @@ class _NotesPageState extends State<NotesPage> {
 
   void _goToLoginPage() {
     Navigator.pushNamedAndRemoveUntil(
-        context, Constants.homePageRoute, (route) => false);
+        context, Routes.homePageRoute, (route) => false);
   }
 }
 
@@ -86,20 +85,20 @@ Future<bool> showLogoutDialog(BuildContext context) {
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: Text('Log out'),
-        content: Text('Are you sure want to log out?'),
+        title: const Text('Log out'),
+        content: const Text('Are you sure want to log out?'),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.of(context).pop(false);
             },
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () {
               Navigator.of(context).pop(true);
             },
-            child: Text('Log out'),
+            child: const Text('Log out'),
           ),
         ],
       );

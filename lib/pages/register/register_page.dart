@@ -3,7 +3,7 @@ import 'dart:developer' as dev_tools show log;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:my_notes/constants.dart';
+import 'package:my_notes/constants/routes.dart';
 import 'package:my_notes/firebase_options.dart';
 import 'package:my_notes/pages/utils/show_snackbar.dart';
 
@@ -92,8 +92,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       TextButton(
                           onPressed: () {
-                            Navigator.pushNamedAndRemoveUntil(context,
-                                Constants.loginPageRoute, (route) => false);
+                            _goToPage(Routes.loginPageRoute);
                           },
                           child: const Text('Already registered? Login here'))
                     ],
@@ -116,11 +115,22 @@ class _RegisterPageState extends State<RegisterPage> {
     dev_tools.log("Password: $password");
 
     try {
-      final userCredential = await FirebaseAuth.instance
+      await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
+      final userCredential = FirebaseAuth.instance.currentUser;
+      await userCredential?.sendEmailVerification();
+      _goToPage(Routes.verifyEmailRoute, deletePrevPages: false);
     } on FirebaseAuthException catch (e) {
-      showErrorSnackBar(e, context);
+      showErrorDialog(context, e.message ?? 'Unknown Register Error ${e.code}');
+    } catch (e) {
+      showErrorDialog(context, 'Unknown error: $e');
     }
+  }
+
+  void _goToPage(String route, {bool deletePrevPages = true}) {
+    deletePrevPages
+        ? Navigator.pushNamedAndRemoveUntil(context, route, (route) => false)
+        : Navigator.pushNamed(context, route);
   }
 
   Future _initFireBase() async {
