@@ -1,3 +1,5 @@
+import 'dart:developer' as dev_tools show log;
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +37,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Login'),
+        title: const Text('Login'),
       ),
       body: FutureBuilder(
           future: _initFireBase(),
@@ -81,7 +83,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       ElevatedButton(
                         onPressed: () async {
-                          _createUser();
+                          _login();
                         },
                         child: const Text('Login'),
                       ),
@@ -92,7 +94,7 @@ class _LoginPageState extends State<LoginPage> {
                         onPressed: () {
                           Navigator.pushNamedAndRemoveUntil(
                             context,
-                            Constants.REGISTER_PAGE_ROUTE,
+                            Constants.registerPageRoute,
                             (route) => false,
                           );
                         },
@@ -112,17 +114,18 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void _createUser() async {
+  void _login() async {
     final String email = _email.text;
     final String password = _password.text;
 
-    debugPrint("Email: $email");
-    debugPrint("Password: $password");
+    dev_tools.log("Email: $email");
+    dev_tools.log("Password: $password");
 
     try {
       final userCredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
-      debugPrint(userCredential.toString());
+      Navigator.pushNamedAndRemoveUntil(
+          context, Constants.notesPageRoute, (route) => false);
     } on FirebaseAuthException catch (e) {
       showErrorSnackBar(e, context);
     }

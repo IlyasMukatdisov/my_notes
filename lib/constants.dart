@@ -1,6 +1,7 @@
 abstract class Constants {
-  static const HOME_PAGE_ROUTE = '/';
-  static const LOGIN_PAGE_ROUTE = '/login';
-  static const REGISTER_PAGE_ROUTE = '/register';
-  static const APP_NAME = 'My Notes';
+  static const homePageRoute = '/';
+  static const loginPageRoute = '/login';
+  static const registerPageRoute = '/register';
+  static const notesPageRoute = '/notes';
+  static const appName = 'My Notes';
 }

@@ -1,3 +1,5 @@
+import 'dart:developer' as dev_tools show log;
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -85,15 +87,15 @@ class _RegisterPageState extends State<RegisterPage> {
                         },
                         child: const Text('Register'),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 16,
                       ),
                       TextButton(
                           onPressed: () {
                             Navigator.pushNamedAndRemoveUntil(context,
-                                Constants.LOGIN_PAGE_ROUTE, (route) => false);
+                                Constants.loginPageRoute, (route) => false);
                           },
-                          child: Text('Already registered? Login here'))
+                          child: const Text('Already registered? Login here'))
                     ],
                   ),
                 );
@@ -110,13 +112,12 @@ class _RegisterPageState extends State<RegisterPage> {
     final email = _email.text;
     final password = _password.text;
 
-    debugPrint("Email: $email");
-    debugPrint("Password: $password");
+    dev_tools.log("Email: $email");
+    dev_tools.log("Password: $password");
 
     try {
       final userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
-      debugPrint(userCredential.toString());
     } on FirebaseAuthException catch (e) {
       showErrorSnackBar(e, context);
     }

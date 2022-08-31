@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_notes/constants.dart';
 import 'package:my_notes/pages/home_page.dart';
 import 'package:my_notes/pages/login_page.dart';
+import 'package:my_notes/pages/notes_page.dart';
 import 'package:my_notes/pages/register_page.dart';
 
 void main() {
@@ -13,9 +14,10 @@ class MyApp extends StatelessWidget {
   MyApp({Key? key}) : super(key: key);
 
   final Map<String, Widget Function(BuildContext)> _routes = {
-    Constants.HOME_PAGE_ROUTE: (context) => const HomePage(),
-    Constants.LOGIN_PAGE_ROUTE: (context) => const LoginPage(),
-    Constants.REGISTER_PAGE_ROUTE: (context) => const RegisterPage(),
+    Constants.homePageRoute: (context) => const HomePage(),
+    Constants.loginPageRoute: (context) => const LoginPage(),
+    Constants.registerPageRoute: (context) => const RegisterPage(),
+    Constants.notesPageRoute: (context) => const NotesPage(),
   };
 
   //
@@ -24,11 +26,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: Constants.APP_NAME,
+      title: Constants.appName,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: Constants.HOME_PAGE_ROUTE,
+      initialRoute: Constants.homePageRoute,
       routes: _routes,
     );
   }

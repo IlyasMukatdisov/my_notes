@@ -12,7 +12,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Verify Email')),
+      appBar: AppBar(title: const Text('Verify Email')),
       body: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -20,15 +20,15 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text('Please verify your email address'),
-            SizedBox(
+            const Text('Please verify your email address'),
+            const SizedBox(
               height: 16.0,
             ),
             ElevatedButton(
               onPressed: () async {
                 _verifyEmail();
               },
-              child: Text('Send'),
+              child: const Text('Send'),
             ),
           ],
         ),
