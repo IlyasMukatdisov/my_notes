@@ -18,6 +18,8 @@ class MyApp extends StatelessWidget {
     Constants.REGISTER_PAGE_ROUTE: (context) => const RegisterPage(),
   };
 
+  //
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
