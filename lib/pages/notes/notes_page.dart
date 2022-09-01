@@ -1,8 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer' as dev_tools show log;
 
 import 'package:my_notes/constants/routes.dart';
+import 'package:my_notes/enums/note_menu_actions.dart';
+import 'package:my_notes/services/auth/services/auth_service.dart';
 
 class NotesPage extends StatefulWidget {
   const NotesPage({
@@ -41,14 +42,14 @@ class _NotesPageState extends State<NotesPage> {
     return PopupMenuButton(
       onSelected: (value) async {
         switch (value) {
-          case MenuAction.logout:
+          case NoteMenuActions.logout:
             {
               dev_tools.log(value.toString());
               final shouldLogout = await showLogoutDialog(context);
               dev_tools.log("should logout: $shouldLogout");
               if (shouldLogout) {
-                await FirebaseAuth.instance.signOut();
-                _goToLoginPage();
+                await AuthService.firebase().logOut();
+                _goToPage(Routes.homePageRoute);
               }
               break;
             }
@@ -57,7 +58,7 @@ class _NotesPageState extends State<NotesPage> {
       itemBuilder: (context) {
         return [
           const PopupMenuItem(
-            value: MenuAction.logout,
+            value: NoteMenuActions.logout,
             child: ListTile(
               title: Text('Log Out'),
               horizontalTitleGap: 0,
@@ -70,14 +71,9 @@ class _NotesPageState extends State<NotesPage> {
     );
   }
 
-  void _goToLoginPage() {
-    Navigator.pushNamedAndRemoveUntil(
-        context, Routes.homePageRoute, (route) => false);
+  void _goToPage(String route) {
+    Navigator.pushNamedAndRemoveUntil(context, route, (route) => false);
   }
-}
-
-enum MenuAction {
-  logout,
 }
 
 Future<bool> showLogoutDialog(BuildContext context) {

@@ -1,5 +1,3 @@
-import 'package:my_notes/pages/verify_email/verify_email_page.dart';
-
 abstract class Routes {
   static const homePageRoute = '/';
   static const loginPageRoute = '/login';

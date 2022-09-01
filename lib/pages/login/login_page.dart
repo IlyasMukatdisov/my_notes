@@ -1,11 +1,10 @@
-import 'dart:developer' as dev_tools show log;
+//import 'dart:developer' as dev_tools show log;
 
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:my_notes/constants/routes.dart';
-import 'package:my_notes/firebase_options.dart';
 import 'package:my_notes/pages/utils/show_snackbar.dart';
+import 'package:my_notes/services/auth/auth_exceptions.dart';
+import 'package:my_notes/services/auth/services/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -82,7 +81,7 @@ class _LoginPageState extends State<LoginPage> {
                         height: 16,
                       ),
                       ElevatedButton(
-                        onPressed: () async {
+                        onPressed: () {
                           _login();
                         },
                         child: const Text('Login'),
@@ -117,24 +116,31 @@ class _LoginPageState extends State<LoginPage> {
   void _login() async {
     final String email = _email.text;
     final String password = _password.text;
-
-    dev_tools.log("Email: $email");
-    dev_tools.log("Password: $password");
-
+    
     try {
-      final user = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password);
-      bool isVerified = user.user?.emailVerified ?? false;
-      dev_tools.log("Email verified: $isVerified");
-      if (isVerified) {
+      final user =
+          await AuthService.firebase().logIn(email: email, password: password);
+      if (user.isEmailVerified) {
         _goToPage(Routes.notesPageRoute);
         return;
       } else {
         _goToPage(Routes.verifyEmailRoute);
         return;
       }
-    } on FirebaseAuthException catch (e) {
-      showErrorDialog(context, e.message ?? 'Unknown Login Error ${e.code}');
+    } on InvalidEmailAuthException catch (_) {
+      showErrorDialog(
+          context, 'Invalid Email. Please check your email and try again');
+    } on UserNotFoundAuthException catch (_) {
+      showErrorDialog(context,
+          'No such email registered or user has been deleted. Please correct email or register');
+    } on UserDisabledAuthException catch (_) {
+      showErrorDialog(
+          context, 'User disabled. Please contact us to solve this problem');
+    } on WrongPasswordAuthException catch (_) {
+      showErrorDialog(context,
+          'The password you enterred is incorrect. Please check your password');
+    } on GenericAuthException catch (e) {
+      showErrorDialog(context, 'Unknown login error: $e');
     } catch (e) {
       showErrorDialog(context, 'Unknown error: $e');
     }
@@ -146,8 +152,6 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future _initFireBase() async {
-    return Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+    return AuthService.firebase().initialize();
   }
 }

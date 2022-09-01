@@ -1,11 +1,10 @@
-import 'dart:developer' as dev_tools show log;
+//import 'dart:developer' as dev_tools show log;
 
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:my_notes/constants/routes.dart';
-import 'package:my_notes/firebase_options.dart';
 import 'package:my_notes/pages/utils/show_snackbar.dart';
+import 'package:my_notes/services/auth/auth_exceptions.dart';
+import 'package:my_notes/services/auth/services/auth_service.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -82,7 +81,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         height: 16,
                       ),
                       ElevatedButton(
-                        onPressed: () async {
+                        onPressed: () {
                           _createUser();
                         },
                         child: const Text('Register'),
@@ -111,17 +110,24 @@ class _RegisterPageState extends State<RegisterPage> {
     final email = _email.text;
     final password = _password.text;
 
-    dev_tools.log("Email: $email");
-    dev_tools.log("Password: $password");
-
     try {
-      await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password);
-      final userCredential = FirebaseAuth.instance.currentUser;
-      await userCredential?.sendEmailVerification();
+      await AuthService.firebase().createUser(email: email, password: password);
+      await AuthService.firebase().sendEmailVerification();
       _goToPage(Routes.verifyEmailRoute, deletePrevPages: false);
-    } on FirebaseAuthException catch (e) {
-      showErrorDialog(context, e.message ?? 'Unknown Register Error ${e.code}');
+    } on EmailAlreadyInUseAuthExcemption catch (_) {
+      showErrorDialog(context,
+          'The email you entered is already registed. Please check your email and try again');
+    } on InvalidEmailAuthException catch (_) {
+      showErrorDialog(context,
+          'The email address you entered is invalid. Please correct the email field');
+    } on OperationNotAllowedAAuthException catch (_) {
+      showErrorDialog(context,
+          'Operation is not allowed. Please contact us to solve this problem');
+    } on WeakPasswordAuthException catch (_) {
+      showErrorDialog(context,
+          'The password you enterred is too weak. Please enter stronger password');
+    } on GenericAuthException catch (e) {
+      showErrorDialog(context, 'Unknown login error: $e');
     } catch (e) {
       showErrorDialog(context, 'Unknown error: $e');
     }
@@ -134,8 +140,6 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Future _initFireBase() async {
-    return Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+    return AuthService.firebase().initialize();
   }
 }

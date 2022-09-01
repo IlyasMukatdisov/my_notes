@@ -1,7 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:my_notes/constants/routes.dart';
-import 'package:my_notes/pages/login/login_page.dart';
+import 'package:my_notes/services/auth/services/auth_service.dart';
 
 class VerifyEmailPage extends StatefulWidget {
   const VerifyEmailPage({super.key});
@@ -34,7 +33,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
             ),
             ElevatedButton(
               onPressed: () async {
-                _verifyEmail();
+                _sendEmailVerification();
                 Navigator.pushNamedAndRemoveUntil(
                   context,
                   Routes.loginPageRoute,
@@ -43,7 +42,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
               },
               child: const Text('Send Again'),
             ),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
             TextButton(
@@ -54,18 +53,14 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                   (route) => false,
                 );
               },
-              child: Text('Already verified? Log in here'),
+              child: const Text('Already verified? Log in here'),
             ),
             TextButton(
               onPressed: () async {
-                await FirebaseAuth.instance.signOut();
-                Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  Routes.registerPageRoute,
-                  (route) => false,
-                );
+                await AuthService.firebase().logOut();
+                _goToPage(Routes.registerPageRoute);
               },
-              child: Text('Restart'),
+              child: const Text('Restart'),
             )
           ],
         ),
@@ -73,9 +68,15 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     );
   }
 
-  void _verifyEmail() async {
-    final FirebaseAuth auth = FirebaseAuth.instance;
-    final user = auth.currentUser;
-    await user?.sendEmailVerification();
+  void _sendEmailVerification() async {
+    await AuthService.firebase().sendEmailVerification();
+  }
+
+  void _goToPage(String registerPageRoute) {
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      Routes.registerPageRoute,
+      (route) => false,
+    );
   }
 }
