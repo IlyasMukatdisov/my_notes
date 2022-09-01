@@ -20,7 +20,7 @@ class InvalidEmailAuthExcveption implements Exception{
 // Registration exceptions
 
 class EmailAlreadyInUseAuthExcemption implements Exception{
-
+  
 }
 
 class InvalidEmailAuthException implements Exception{
