@@ -138,7 +138,7 @@ class _LoginPageState extends State<LoginPage> {
           context, 'User disabled. Please contact us to solve this problem');
     } on WrongPasswordAuthException catch (_) {
       showErrorDialog(context,
-          'The password you enterred is incorrect. Please check your password');
+          'The password you entered is incorrect. Please check your password');
     } on GenericAuthException catch (e) {
       showErrorDialog(context, 'Unknown login error: $e');
     } catch (e) {
