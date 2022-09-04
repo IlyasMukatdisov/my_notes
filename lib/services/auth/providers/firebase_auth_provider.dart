@@ -10,7 +10,7 @@ import 'package:firebase_auth/firebase_auth.dart'
 
 class FirebaseAuthProvider implements AuthProvider {
   @override
-  Future<void> initialize() async{
+  Future<void> initialize() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
@@ -35,7 +35,7 @@ class FirebaseAuthProvider implements AuthProvider {
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case FirebaseExceptionCodes.emailAlreadyInUse:
-          throw EmailAlreadyInUseAuthExcemption();
+          throw EmailAlreadyInUseAuthException();
         case FirebaseExceptionCodes.invalidEmail:
           throw InvalidEmailAuthException();
         case FirebaseExceptionCodes.operationNotAllowed:

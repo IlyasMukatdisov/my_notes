@@ -4,6 +4,7 @@ import 'dart:developer' as dev_tools show log;
 import 'package:my_notes/constants/routes.dart';
 import 'package:my_notes/enums/note_menu_actions.dart';
 import 'package:my_notes/services/auth/services/auth_service.dart';
+import 'package:my_notes/services/crud/notes_service.dart';
 
 class NotesPage extends StatefulWidget {
   const NotesPage({
@@ -15,27 +16,52 @@ class NotesPage extends StatefulWidget {
 }
 
 class _NotesPageState extends State<NotesPage> {
+  late final NotesService _notesService;
+  String get userEmail => AuthService.firebase().currentUser!.email!;
+
+  @override
+  void initState() {
+    _notesService = NotesService();
+    _notesService.open();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _notesService.close();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Notes'),
-        actions: [
-          _popupMenuButton(),
-        ],
-      ),
-      body: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        width: double.infinity,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Text("Notes"),
+        appBar: AppBar(
+          title: const Text('My Notes'),
+          actions: [
+            _popupMenuButton(),
           ],
         ),
-      ),
-    );
+        body: FutureBuilder(
+          future: _notesService.getOrCreateUser(email: userEmail),
+          builder: (context, snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.done:
+                return StreamBuilder(
+                  stream: _notesService.allNotes,
+                  builder: (context, snapshot) {
+                    switch (snapshot.connectionState) {
+                      case ConnectionState.waiting:
+                        return const Center(child: Text('waiting for notes'));
+                      default:
+                        return const Center(child: CircularProgressIndicator());
+                    }
+                  },
+                );
+              default:
+                return const CircularProgressIndicator();
+            }
+          },
+        ));
   }
 
   Widget _popupMenuButton() {

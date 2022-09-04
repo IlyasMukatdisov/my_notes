@@ -114,7 +114,7 @@ class _RegisterPageState extends State<RegisterPage> {
       await AuthService.firebase().createUser(email: email, password: password);
       await AuthService.firebase().sendEmailVerification();
       _goToPage(Routes.verifyEmailRoute, deletePrevPages: false);
-    } on EmailAlreadyInUseAuthExcemption catch (_) {
+    } on EmailAlreadyInUseAuthException catch (_) {
       showErrorDialog(context,
           'The email you entered is already registed. Please check your email and try again');
     } on InvalidEmailAuthException catch (_) {
