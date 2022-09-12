@@ -1,8 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer' as dev_tools show log;
 
 import 'package:my_notes/constants/routes.dart';
 import 'package:my_notes/enums/note_menu_actions.dart';
+import 'package:my_notes/pages/notes/components/notes_list_view.dart';
 import 'package:my_notes/services/auth/services/auth_service.dart';
 import 'package:my_notes/services/crud/notes_service.dart';
 
@@ -27,17 +29,12 @@ class _NotesPageState extends State<NotesPage> {
   }
 
   @override
-  void dispose() {
-    _notesService.close();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: const Text('My Notes'),
           actions: [
+            _addNoteButton(),
             _popupMenuButton(),
           ],
         ),
@@ -48,10 +45,19 @@ class _NotesPageState extends State<NotesPage> {
               case ConnectionState.done:
                 return StreamBuilder(
                   stream: _notesService.allNotes,
-                  builder: (context, snapshot) {
+                  builder: (context1, snapshot) {
                     switch (snapshot.connectionState) {
+                      case ConnectionState.active:
                       case ConnectionState.waiting:
-                        return const Center(child: Text('waiting for notes'));
+                        if (snapshot.hasData) {
+                          final notes = snapshot.data as List<DatabaseNote>;
+                          return NotesListView(
+                              notes: notes, onDeleteNote: (note) {});
+                        } else {
+                          return const Center(
+                            child: CircularProgressIndicator.adaptive(),
+                          );
+                        }
                       default:
                         return const Center(child: CircularProgressIndicator());
                     }
@@ -99,6 +105,14 @@ class _NotesPageState extends State<NotesPage> {
 
   void _goToPage(String route) {
     Navigator.pushNamedAndRemoveUntil(context, route, (route) => false);
+  }
+
+  Widget _addNoteButton() {
+    return IconButton(
+        onPressed: () {
+          Navigator.pushNamed(context, Routes.newNotePageRoute);
+        },
+        icon: const Icon(Icons.note_add));
   }
 }
 

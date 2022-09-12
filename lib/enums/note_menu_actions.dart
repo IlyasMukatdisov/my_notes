@@ -1,3 +1,4 @@
 enum NoteMenuActions {
   logout,
+  addNote
 }

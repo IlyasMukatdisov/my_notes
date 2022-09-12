@@ -15,7 +15,7 @@ const userTable = 'user';
 const idColumn = 'id';
 const userIdColumn = 'user_id';
 const emailColumn = 'email';
-const textColumn = 'email';
+const textColumn = 'text';
 const isSyncedWithCloudColumn = 'is_synced_with_cloud';
 
 const createUserTable = '''
@@ -40,16 +40,20 @@ class NotesService {
   Database? _db;
 
   static final NotesService _shared = NotesService._sharedInstance();
-  NotesService._sharedInstance();
-
+  NotesService._sharedInstance() {
+    _noteStreamController = StreamController<List<DatabaseNote>>.broadcast(
+      onListen: () {
+        _noteStreamController.sink.add(_notes);
+      },
+    );
+  }
   factory NotesService() => _shared;
 
   List<DatabaseNote> _notes = [];
 
   Stream<List<DatabaseNote>> get allNotes => _noteStreamController.stream;
 
-  final _noteStreamController =
-      StreamController<List<DatabaseNote>>.broadcast();
+  late final StreamController<List<DatabaseNote>> _noteStreamController;
 
   Future<void> _cacheNotes() async {
     final notes = await getAllNotes();
@@ -247,8 +251,9 @@ class NotesService {
 
     await getNote(id: note.id);
 
-    final updatesCount = await db
-        .update(noteTable, {textColumn: text, isSyncedWithCloudColumn: 0});
+    final updatesCount = await db.update(
+        noteTable, {textColumn: text, isSyncedWithCloudColumn: 0},
+        where: '$idColumn = ?', whereArgs: [note.id]);
 
     if (updatesCount == 0) {
       throw CouldNotUpdateNoteException();
@@ -328,7 +333,7 @@ class DatabaseNote {
 
   @override
   String toString() =>
-      "Note: id = $id | user_id = $userId | is_synced_with_cloud = $isSyncedWithCloud";
+      "Note: id = $id | text = '$text' | user_id = $userId | is_synced_with_cloud = $isSyncedWithCloud";
 
   @override
   bool operator ==(covariant DatabaseNote other) => id == other.id;
