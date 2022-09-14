@@ -122,10 +122,14 @@ class _LoginPageState extends State<LoginPage> {
       final user =
           await AuthService.firebase().logIn(email: email, password: password);
       if (user.isEmailVerified) {
-        _goToPage(Routes.notesPageRoute);
+        if (!mounted) return;
+        Navigator.pushNamedAndRemoveUntil(
+            context, Routes.notesPageRoute, (route) => false);
         return;
       } else {
-        _goToPage(Routes.verifyEmailRoute);
+        if (!mounted) return;
+        Navigator.pushNamedAndRemoveUntil(
+            context, Routes.verifyEmailRoute, (route) => false);
         return;
       }
     } on InvalidEmailAuthException catch (_) {
@@ -161,11 +165,6 @@ class _LoginPageState extends State<LoginPage> {
         text: 'Unknown error: $e',
       );
     }
-  }
-
-  void _goToPage(String route) {
-    Navigator.pushNamedAndRemoveUntil(context, route, (route) => false);
-    return;
   }
 
   Future _initFireBase() async {

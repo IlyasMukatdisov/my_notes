@@ -58,7 +58,12 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
             TextButton(
               onPressed: () async {
                 await AuthService.firebase().logOut();
-                _goToPage(Routes.registerPageRoute);
+                if (!mounted) return;
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  Routes.registerPageRoute,
+                  (route) => false,
+                );
               },
               child: const Text('Restart'),
             )
@@ -70,13 +75,5 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
   void _sendEmailVerification() async {
     await AuthService.firebase().sendEmailVerification();
-  }
-
-  void _goToPage(String registerPageRoute) {
-    Navigator.pushNamedAndRemoveUntil(
-      context,
-      Routes.registerPageRoute,
-      (route) => false,
-    );
   }
 }

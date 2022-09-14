@@ -1,5 +1,3 @@
-//import 'dart:developer' as dev_tools show log;
-
 import 'package:flutter/material.dart';
 import 'package:my_notes/constants/routes.dart';
 import 'package:my_notes/pages/utils/dialogs/error_dialog.dart';
@@ -91,7 +89,8 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       TextButton(
                           onPressed: () {
-                            _goToPage(Routes.loginPageRoute);
+                            Navigator.pushNamedAndRemoveUntil(context,
+                                Routes.loginPageRoute, (route) => false);
                           },
                           child: const Text('Already registered? Login here'))
                     ],
@@ -113,7 +112,8 @@ class _RegisterPageState extends State<RegisterPage> {
     try {
       await AuthService.firebase().createUser(email: email, password: password);
       await AuthService.firebase().sendEmailVerification();
-      _goToPage(Routes.verifyEmailRoute, deletePrevPages: false);
+      if (!mounted) return;
+      Navigator.of(context).pushNamed(Routes.verifyEmailRoute);
     } on EmailAlreadyInUseAuthException catch (_) {
       showErrorDialog(
         context: context,
@@ -149,12 +149,6 @@ class _RegisterPageState extends State<RegisterPage> {
         text: 'Unknown error: $e',
       );
     }
-  }
-
-  void _goToPage(String route, {bool deletePrevPages = true}) {
-    deletePrevPages
-        ? Navigator.pushNamedAndRemoveUntil(context, route, (route) => false)
-        : Navigator.pushNamed(context, route);
   }
 
   Future _initFireBase() async {
