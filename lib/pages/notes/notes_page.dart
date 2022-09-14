@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_notes/constants/routes.dart';
 import 'package:my_notes/pages/notes/components/add_note_button.dart';
 import 'package:my_notes/pages/notes/components/notes_list_view.dart';
 import 'package:my_notes/pages/notes/components/note_popup_menu.dart';
@@ -49,10 +50,16 @@ class _NotesPageState extends State<NotesPage> {
                         if (snapshot.hasData) {
                           final notes = snapshot.data as List<DatabaseNote>;
                           return NotesListView(
-                              notes: notes,
-                              onDeleteNote: (note) async {
-                                await _notesService.deleteNote(noteId: note.id);
-                              });
+                            notes: notes,
+                            onDeleteNote: (note) async {
+                              await _notesService.deleteNote(noteId: note.id);
+                            },
+                            onTap: (note) {
+                              Navigator.pushNamed(
+                                  context, Routes.createUpdateNotePageRoute,
+                                  arguments: note);
+                            },
+                          );
                         } else {
                           return const Center(
                             child: CircularProgressIndicator.adaptive(),

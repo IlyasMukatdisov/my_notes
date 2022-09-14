@@ -4,5 +4,5 @@ abstract class Routes {
   static const registerPageRoute = '/register';
   static const verifyEmailRoute = '/verify-email';
   static const notesPageRoute = '/notes';
-  static const newNotePageRoute = '/notes/new-note';
+  static const createUpdateNotePageRoute = '/notes/create-update-note';
 }

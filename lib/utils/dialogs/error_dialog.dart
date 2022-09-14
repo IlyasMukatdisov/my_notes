@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:my_notes/pages/utils/dialogs/generic_dialog.dart';
+import 'package:my_notes/utils/dialogs/generic_dialog.dart';
 
 Future<void> showErrorDialog({
   required BuildContext context,

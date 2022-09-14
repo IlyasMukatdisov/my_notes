@@ -3,7 +3,7 @@ import 'package:my_notes/constants/routes.dart';
 import 'package:my_notes/constants/strings.dart';
 import 'package:my_notes/pages/home/home_page.dart';
 import 'package:my_notes/pages/login/login_page.dart';
-import 'package:my_notes/pages/notes/new_note.dart';
+import 'package:my_notes/pages/notes/create_update_note_page.dart';
 import 'package:my_notes/pages/notes/notes_page.dart';
 import 'package:my_notes/pages/register/register_page.dart';
 import 'package:my_notes/pages/verify_email/verify_email_page.dart';
@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
     Routes.registerPageRoute: (context) => const RegisterPage(),
     Routes.notesPageRoute: (context) => const NotesPage(),
     Routes.verifyEmailRoute: (context) => const VerifyEmailPage(),
-    Routes.newNotePageRoute: (context) => const NewNotePage(),
+    Routes.createUpdateNotePageRoute: (context) => const CreateUpdateNotePage(),
   };
 
   //

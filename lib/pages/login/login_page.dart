@@ -2,8 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:my_notes/constants/routes.dart';
-import 'package:my_notes/pages/utils/dialogs/error_dialog.dart';
-import 'package:my_notes/pages/utils/show_snackbar.dart';
+import 'package:my_notes/utils/dialogs/error_dialog.dart';
 import 'package:my_notes/services/auth/auth_exceptions.dart';
 import 'package:my_notes/services/auth/services/auth_service.dart';
 

@@ -26,7 +26,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
               textAlign: TextAlign.justify,
             ),
             const Text(
-                "If you haven't recieved a verification email please press the button below",
+                "If you haven't received a verification email please press the button below",
                 textAlign: TextAlign.justify),
             const SizedBox(
               height: 16.0,

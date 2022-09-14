@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_notes/constants/routes.dart';
 import 'package:my_notes/enums/note_menu_actions.dart';
-import 'package:my_notes/pages/utils/dialogs/logout_dialog.dart';
+import 'package:my_notes/utils/dialogs/logout_dialog.dart';
 import 'package:my_notes/services/auth/services/auth_service.dart';
 
 class NotePopUpMenu extends StatefulWidget {
