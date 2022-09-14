@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:my_notes/constants/routes.dart';
+import 'package:my_notes/pages/utils/dialogs/error_dialog.dart';
 import 'package:my_notes/pages/utils/show_snackbar.dart';
 import 'package:my_notes/services/auth/auth_exceptions.dart';
 import 'package:my_notes/services/auth/services/auth_service.dart';
@@ -116,7 +117,7 @@ class _LoginPageState extends State<LoginPage> {
   void _login() async {
     final String email = _email.text;
     final String password = _password.text;
-    
+
     try {
       final user =
           await AuthService.firebase().logIn(email: email, password: password);
@@ -129,20 +130,36 @@ class _LoginPageState extends State<LoginPage> {
       }
     } on InvalidEmailAuthException catch (_) {
       showErrorDialog(
-          context, 'Invalid Email. Please check your email and try again');
+        context: context,
+        text: 'Invalid Email. Please check your email and try again',
+      );
     } on UserNotFoundAuthException catch (_) {
-      showErrorDialog(context,
-          'No such email registered or user has been deleted. Please correct email or register');
+      showErrorDialog(
+        context: context,
+        text:
+            'No such email registered or user has been deleted. Please correct email or register',
+      );
     } on UserDisabledAuthException catch (_) {
       showErrorDialog(
-          context, 'User disabled. Please contact us to solve this problem');
+        context: context,
+        text: 'User disabled. Please contact us to solve this problem',
+      );
     } on WrongPasswordAuthException catch (_) {
-      showErrorDialog(context,
-          'The password you entered is incorrect. Please check your password');
+      showErrorDialog(
+        context: context,
+        text:
+            'The password you entered is incorrect. Please check your password',
+      );
     } on GenericAuthException catch (e) {
-      showErrorDialog(context, 'Unknown login error: $e');
+      showErrorDialog(
+        context: context,
+        text: 'Unknown login error: $e',
+      );
     } catch (e) {
-      showErrorDialog(context, 'Unknown error: $e');
+      showErrorDialog(
+        context: context,
+        text: 'Unknown error: $e',
+      );
     }
   }
 
