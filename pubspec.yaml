@@ -1,6 +1,5 @@
 name: my_notes
-description: A new Flutter project.
-
+description: Note app
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -27,6 +26,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  cloud_firestore: ^3.4.7
   cupertino_icons: ^1.0.2
   firebase_auth: ^3.7.0
   firebase_core: ^1.21.1

@@ -1,17 +1,21 @@
-class DatabaseAlreadyOpenException {}
+// ! LOCAL DATABASE EXCEPTIONS
 
-class DatabaseIsNotOpenException {}
+// class DatabaseAlreadyOpenException implements Exception {}
 
-class UnableToGetDocumentPathException {}
+// class DatabaseIsNotOpenException implements Exception {}
 
-class CouldNotDeleteUserException {}
+// class UnableToGetDocumentPathException  implements Exception{}
 
-class CouldNotDeleteNoteException {}
+// class CouldNotDeleteUserException  implements Exception{}
 
-class UserAlreadyExistException {}
+// class CouldNotDeleteNoteException implements Exception {}
 
-class UserNotFoundException {}
+// class UserAlreadyExistException implements Exception {}
 
-class NoteNotFoundException {}
+// class UserNotFoundException implements Exception {}
 
-class CouldNotUpdateNoteException {}
+// class NoteNotFoundException  implements Exception{}
+
+// class CouldNotUpdateNoteException  implements Exception{}
+
+// class UserShouldBeSetBeforeReadingNotesException implements Exception{}
