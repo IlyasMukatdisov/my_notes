@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_notes/services/auth/services/auth_service.dart';
-import 'package:my_notes/extensions/build_context/get_argument.dart';
+import 'package:my_notes/utils/extensions/build_context/get_argument.dart';
 import 'package:my_notes/services/cloud/firebase_cloud_storage.dart';
 import 'package:my_notes/services/cloud/cloud_note.dart';
 import 'package:my_notes/utils/dialogs/cannot_share_empty_note_dialog.dart';

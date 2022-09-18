@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:my_notes/constants/routes.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_notes/services/auth/bloc/auth_bloc.dart';
+import 'package:my_notes/services/auth/bloc/auth_event.dart';
+import 'package:my_notes/utils/constants/routes.dart';
 import 'package:my_notes/services/auth/services/auth_service.dart';
 
 class VerifyEmailPage extends StatefulWidget {
@@ -33,12 +36,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
             ),
             ElevatedButton(
               onPressed: () async {
-                _sendEmailVerification();
-                Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  Routes.loginPageRoute,
-                  (route) => false,
-                );
+                context
+                    .read<AuthBloc>()
+                    .add(const AuthEventSendEmailVerification());
               },
               child: const Text('Send Again'),
             ),
@@ -47,33 +47,13 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
             ),
             TextButton(
               onPressed: () {
-                Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  Routes.loginPageRoute,
-                  (route) => false,
-                );
+                context.read<AuthBloc>().add(const AuthEventLogOut());
               },
               child: const Text('Already verified? Log in here'),
             ),
-            TextButton(
-              onPressed: () async {
-                await AuthService.firebase().logOut();
-                if (!mounted) return;
-                Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  Routes.registerPageRoute,
-                  (route) => false,
-                );
-              },
-              child: const Text('Restart'),
-            )
           ],
         ),
       ),
     );
-  }
-
-  void _sendEmailVerification() async {
-    await AuthService.firebase().sendEmailVerification();
   }
 }

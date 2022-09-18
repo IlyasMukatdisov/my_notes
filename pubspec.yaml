@@ -29,6 +29,7 @@ dependencies:
   bloc: ^8.1.0
   cloud_firestore: ^3.4.7
   cupertino_icons: ^1.0.2
+  equatable: ^2.0.5
   firebase_auth: ^3.7.0
   firebase_core: ^1.21.1
   flutter:

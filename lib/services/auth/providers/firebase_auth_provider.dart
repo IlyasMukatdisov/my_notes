@@ -1,5 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:my_notes/constants/exception_codes.dart';
+import 'package:my_notes/utils/constants/exception_codes.dart';
 import 'package:my_notes/firebase_options.dart';
 import 'package:my_notes/services/auth/providers/auth_provider.dart';
 import 'package:my_notes/services/auth/models/auth_user.dart';

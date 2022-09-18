@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:my_notes/constants/routes.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_notes/services/auth/bloc/auth_bloc.dart';
+import 'package:my_notes/services/auth/bloc/auth_event.dart';
+import 'package:my_notes/services/auth/bloc/auth_state.dart';
+import 'package:my_notes/utils/constants/routes.dart';
 import 'package:my_notes/utils/dialogs/error_dialog.dart';
 import 'package:my_notes/services/auth/auth_exceptions.dart';
 import 'package:my_notes/services/auth/services/auth_service.dart';
@@ -32,126 +36,135 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Register'),
-      ),
-      body: FutureBuilder(
-          future: _initFireBase(),
-          builder: (context, snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.done:
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      TextField(
-                        keyboardType: TextInputType.emailAddress,
-                        controller: _email,
-                        enableSuggestions: false,
-                        autocorrect: false,
-                        decoration: const InputDecoration(
-                          hintText: 'Email',
-                          border: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(width: 1, color: Colors.black),
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        _handleRegisterExceptions(context, state);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Register'),
+        ),
+        body: FutureBuilder(
+            future: _initFireBase(),
+            builder: (context, snapshot) {
+              switch (snapshot.connectionState) {
+                case ConnectionState.done:
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextField(
+                          keyboardType: TextInputType.emailAddress,
+                          controller: _email,
+                          enableSuggestions: false,
+                          autocorrect: false,
+                          decoration: const InputDecoration(
+                            hintText: 'Email',
+                            border: OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(width: 1, color: Colors.black),
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      TextField(
-                        controller: _password,
-                        obscureText: true,
-                        enableSuggestions: false,
-                        autocorrect: false,
-                        decoration: const InputDecoration(
-                          hintText: 'Password',
-                          border: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(width: 1, color: Colors.black),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        TextField(
+                          controller: _password,
+                          obscureText: true,
+                          enableSuggestions: false,
+                          autocorrect: false,
+                          decoration: const InputDecoration(
+                            hintText: 'Password',
+                            border: OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(width: 1, color: Colors.black),
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          _createUser();
-                        },
-                        child: const Text('Register'),
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      TextButton(
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        ElevatedButton(
                           onPressed: () {
-                            Navigator.pushNamedAndRemoveUntil(context,
-                                Routes.loginPageRoute, (route) => false);
+                            _createUser(context);
                           },
-                          child: const Text('Already registered? Login here'))
-                    ],
-                  ),
-                );
-              default:
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-            }
-          }),
+                          child: const Text('Register'),
+                        ),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        TextButton(
+                            onPressed: () {
+                              context.read<AuthBloc>().add(const AuthEventLogOut());
+                            },
+                            child: const Text('Already registered? Login here'))
+                      ],
+                    ),
+                  );
+                default:
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+              }
+            }),
+      ),
     );
   }
 
-  void _createUser() async {
+  void _createUser(BuildContext context) {
     final email = _email.text;
     final password = _password.text;
-
-    try {
-      await AuthService.firebase().createUser(email: email, password: password);
-      await AuthService.firebase().sendEmailVerification();
-      if (!mounted) return;
-      Navigator.of(context).pushNamed(Routes.verifyEmailRoute);
-    } on EmailAlreadyInUseAuthException catch (_) {
-      showErrorDialog(
-        context: context,
-        text:
-            'The email you entered is already registered. Please check your email and try again',
-      );
-    } on InvalidEmailAuthException catch (_) {
-      showErrorDialog(
-        context: context,
-        text:
-            'The email address you entered is invalid. Please correct the email field',
-      );
-    } on OperationNotAllowedAAuthException catch (_) {
-      showErrorDialog(
-        context: context,
-        text:
-            'Operation is not allowed. Please contact us to solve this problem',
-      );
-    } on WeakPasswordAuthException catch (_) {
-      showErrorDialog(
-        context: context,
-        text:
-            'The password you entered is too weak. Please enter stronger password',
-      );
-    } on GenericAuthException catch (e) {
-      showErrorDialog(
-        context: context,
-        text: 'Unknown login error: $e',
-      );
-    } catch (e) {
-      showErrorDialog(
-        context: context,
-        text: 'Unknown error: $e',
-      );
-    }
+    context
+        .read<AuthBloc>()
+        .add(AuthEventRegister(email: email, password: password));
   }
 
   Future _initFireBase() async {
     return AuthService.firebase().initialize();
+  }
+
+  void _handleRegisterExceptions(BuildContext context, AuthState state) async {
+    if (state is AuthStateRegistering) {
+      if (state.exception is EmailAlreadyInUseAuthException) {
+        await showErrorDialog(
+          context: context,
+          text:
+              'The email you entered is already registered. Please check your email and try again',
+        );
+        return;
+      }
+
+      if (state.exception is InvalidEmailAuthException) {
+        await showErrorDialog(
+          context: context,
+          text:
+              'The email address you entered is invalid. Please correct the email field',
+        );
+        return;
+      }
+
+      if (state.exception is OperationNotAllowedAAuthException) {
+        await showErrorDialog(
+          context: context,
+          text:
+              'Operation is not allowed. Please contact us to solve this problem',
+        );
+        return;
+      }
+
+      if (state.exception is WeakPasswordAuthException) {
+        await showErrorDialog(
+          context: context,
+          text:
+              'The password you entered is too weak. Please enter stronger password',
+        );
+        return;
+      }
+
+      await showErrorDialog(
+          context: context, text: 'Unknown error: ${state.exception}');
+    }
   }
 }
