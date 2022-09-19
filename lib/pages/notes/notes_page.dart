@@ -19,18 +19,46 @@ class NotesPage extends StatefulWidget {
 class _NotesPageState extends State<NotesPage> {
   late final FirebaseCloudStorage _notesService;
   String get userId => AuthService.firebase().currentUser!.id;
+  late final TextEditingController _controller;
 
   @override
   void initState() {
     _notesService = FirebaseCloudStorage();
+    _controller = TextEditingController();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('My Notes'),
+          title: TextFormField(
+            controller: _controller,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: Colors.white)),
+              filled: true,
+              fillColor: Colors.white,
+              hintText: 'Search notes',
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.search),
+                onPressed: () {},
+              ),
+              enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: Colors.white)),
+              focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: Colors.white)),
+            ),
+          ),
           actions: [
             addNoteButton(context),
             const NotePopUpMenu(),
@@ -43,10 +71,23 @@ class _NotesPageState extends State<NotesPage> {
               case ConnectionState.active:
               case ConnectionState.waiting:
                 if (snapshot.hasData) {
+                  Iterable<CloudNote> result;
                   final notes = snapshot.data as Iterable<CloudNote>;
+                  String name = _controller.text;
+                  if (name.isEmpty) {
+                    result = notes;
+                  } else {
+                    List<CloudNote> foundedNotes = [];
+                    for (var note in notes) {
+                      if (note.text.contains(name.toLowerCase())) {
+                        foundedNotes.add(note);
+                      }
+                    }
+                    result = foundedNotes;
+                  }
                   return notes.isNotEmpty
                       ? NotesListView(
-                          notes: notes,
+                          notes: result,
                           onDeleteNote: (note) async {
                             await _notesService.deleteNote(
                                 documentId: note.documentId);
@@ -69,7 +110,7 @@ class _NotesPageState extends State<NotesPage> {
                         );
                 } else {
                   return const Center(
-                    child: CircularProgressIndicator.adaptive(),
+                    child: CircularProgressIndicator(),
                   );
                 }
               default:
@@ -78,4 +119,6 @@ class _NotesPageState extends State<NotesPage> {
           },
         ));
   }
+
+  void _search() {}
 }

@@ -119,7 +119,7 @@ class _CreateUpdateNotePageState extends State<CreateUpdateNotePage> {
                 }
               default:
                 return const Center(
-                    child: CircularProgressIndicator.adaptive());
+                    child: CircularProgressIndicator());
             }
           },
         ));
