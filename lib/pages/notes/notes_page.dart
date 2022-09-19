@@ -44,18 +44,29 @@ class _NotesPageState extends State<NotesPage> {
               case ConnectionState.waiting:
                 if (snapshot.hasData) {
                   final notes = snapshot.data as Iterable<CloudNote>;
-                  return NotesListView(
-                    notes: notes,
-                    onDeleteNote: (note) async {
-                      await _notesService.deleteNote(
-                          documentId: note.documentId);
-                    },
-                    onTap: (note) {
-                      Navigator.pushNamed(
-                          context, Routes.createUpdateNotePageRoute,
-                          arguments: note);
-                    },
-                  );
+                  return notes.isNotEmpty
+                      ? NotesListView(
+                          notes: notes,
+                          onDeleteNote: (note) async {
+                            await _notesService.deleteNote(
+                                documentId: note.documentId);
+                          },
+                          onTap: (note) {
+                            Navigator.pushNamed(
+                                context, Routes.createUpdateNotePageRoute,
+                                arguments: note);
+                          },
+                        )
+                      : const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Text(
+                              "Your notes are empty. In order to add note please tap on plus button",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.black54),
+                            ),
+                          ),
+                        );
                 } else {
                   return const Center(
                     child: CircularProgressIndicator.adaptive(),

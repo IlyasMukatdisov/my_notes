@@ -105,14 +105,15 @@ class _CreateUpdateNotePageState extends State<CreateUpdateNotePage> {
               case ConnectionState.done:
                 {
                   _setupTextControllerListener();
-                  return Padding(
+                  return SingleChildScrollView(
                     padding: const EdgeInsets.all(16.0),
-                    child: TextField(
+                    child: TextFormField(
                       controller: _textController,
                       keyboardType: TextInputType.multiline,
                       maxLines: null,
                       decoration: const InputDecoration(
-                          hintText: 'Start typing your note...'),
+                          hintText: 'Start typing your note...',
+                          border: OutlineInputBorder()),
                     ),
                   );
                 }

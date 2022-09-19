@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_notes/helpers/loading/loading_screen_controller.dart';
 
@@ -10,6 +9,25 @@ class LoadingScreen {
   factory LoadingScreen() => _shared;
 
   LoadingScreenController? controller;
+
+  void show({
+    required BuildContext context,
+    required String text,
+  }) {
+    if (controller?.update(text) ?? false) {
+      return;
+    } else {
+      controller = showOverlay(
+        context: context,
+        text: text,
+      );
+    }
+  }
+
+  void hide() {
+    controller?.close();
+    controller = null;
+  }
 
   LoadingScreenController showOverlay({
     required BuildContext context,

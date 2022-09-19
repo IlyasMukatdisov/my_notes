@@ -26,11 +26,14 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
           children: [
             const Text(
               "We've sent you an email verification. Please open your email and follow the link to verify email address",
-              textAlign: TextAlign.justify,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(
+              height: 16,
             ),
             const Text(
-                "If you haven't received a verification email please press the button below",
-                textAlign: TextAlign.justify),
+                "If you haven't see a verification email please check your spam folder and if you haven't receive an email press the button below",
+                textAlign: TextAlign.center),
             const SizedBox(
               height: 16.0,
             ),

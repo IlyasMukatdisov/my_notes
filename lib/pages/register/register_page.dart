@@ -3,10 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_notes/services/auth/bloc/auth_bloc.dart';
 import 'package:my_notes/services/auth/bloc/auth_event.dart';
 import 'package:my_notes/services/auth/bloc/auth_state.dart';
-import 'package:my_notes/utils/constants/routes.dart';
 import 'package:my_notes/utils/dialogs/error_dialog.dart';
 import 'package:my_notes/services/auth/auth_exceptions.dart';
-import 'package:my_notes/services/auth/services/auth_service.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -19,6 +17,8 @@ class _RegisterPageState extends State<RegisterPage> {
   late final TextEditingController _email;
 
   late final TextEditingController _password;
+
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -44,73 +44,80 @@ class _RegisterPageState extends State<RegisterPage> {
         appBar: AppBar(
           title: const Text('Register'),
         ),
-        body: FutureBuilder(
-            future: _initFireBase(),
-            builder: (context, snapshot) {
-              switch (snapshot.connectionState) {
-                case ConnectionState.done:
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        TextField(
-                          keyboardType: TextInputType.emailAddress,
-                          controller: _email,
-                          enableSuggestions: false,
-                          autocorrect: false,
-                          decoration: const InputDecoration(
-                            hintText: 'Email',
-                            border: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(width: 1, color: Colors.black),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                        TextField(
-                          controller: _password,
-                          obscureText: true,
-                          enableSuggestions: false,
-                          autocorrect: false,
-                          decoration: const InputDecoration(
-                            hintText: 'Password',
-                            border: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(width: 1, color: Colors.black),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            _createUser(context);
-                          },
-                          child: const Text('Register'),
-                        ),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                        TextButton(
-                            onPressed: () {
-                              context.read<AuthBloc>().add(const AuthEventLogOut());
-                            },
-                            child: const Text('Already registered? Login here'))
-                      ],
+        body: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextFormField(
+                    validator: _validator,
+                    keyboardType: TextInputType.emailAddress,
+                    controller: _email,
+                    enableSuggestions: false,
+                    autocorrect: false,
+                    autofocus: true,
+                    decoration: const InputDecoration(
+                      hintText: 'Email',
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(width: 1, color: Colors.black),
+                      ),
                     ),
-                  );
-                default:
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-              }
-            }),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  TextFormField(
+                    validator: _validator,
+                    controller: _password,
+                    obscureText: true,
+                    enableSuggestions: false,
+                    autocorrect: false,
+                    decoration: const InputDecoration(
+                      hintText: 'Password',
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(width: 1, color: Colors.black),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        _createUser(context);
+                      }
+                    },
+                    child: const Text(
+                      'Register',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  TextButton(
+                      onPressed: () {
+                        context.read<AuthBloc>().add(const AuthEventLogOut());
+                      },
+                      child: const Text('Already registered? Login here'))
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
+  }
+
+  String? _validator(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'This filed can not be empty';
+    }
+    return null;
   }
 
   void _createUser(BuildContext context) {
@@ -119,10 +126,6 @@ class _RegisterPageState extends State<RegisterPage> {
     context
         .read<AuthBloc>()
         .add(AuthEventRegister(email: email, password: password));
-  }
-
-  Future _initFireBase() async {
-    return AuthService.firebase().initialize();
   }
 
   void _handleRegisterExceptions(BuildContext context, AuthState state) async {

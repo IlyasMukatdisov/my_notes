@@ -2,14 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_notes/utils/constants/routes.dart';
 import 'package:my_notes/services/auth/bloc/auth_bloc.dart';
 import 'package:my_notes/services/auth/bloc/auth_event.dart';
 import 'package:my_notes/services/auth/bloc/auth_state.dart';
 import 'package:my_notes/utils/dialogs/error_dialog.dart';
 import 'package:my_notes/services/auth/auth_exceptions.dart';
-import 'package:my_notes/services/auth/services/auth_service.dart';
-import 'package:my_notes/utils/dialogs/loading_dialog.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -22,7 +19,7 @@ class _LoginPageState extends State<LoginPage> {
   late final TextEditingController _email;
   late final TextEditingController _password;
 
-  CloseDialog? _closeDialogHandle;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -48,78 +45,94 @@ class _LoginPageState extends State<LoginPage> {
         appBar: AppBar(
           title: const Text('Login'),
         ),
-        body: FutureBuilder(
-            future: _initFireBase(),
-            builder: (context, snapshot) {
-              switch (snapshot.connectionState) {
-                case ConnectionState.done:
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        TextField(
-                          keyboardType: TextInputType.emailAddress,
-                          controller: _email,
-                          enableSuggestions: false,
-                          autocorrect: false,
-                          decoration: const InputDecoration(
-                            hintText: 'Email',
-                            border: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(width: 1, color: Colors.black),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                        TextField(
-                          controller: _password,
-                          obscureText: true,
-                          enableSuggestions: false,
-                          autocorrect: false,
-                          decoration: const InputDecoration(
-                            hintText: 'Password',
-                            border: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(width: 1, color: Colors.black),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            _login();
-                          },
-                          child: const Text('Login'),
-                        ),
-                        const SizedBox(
-                          height: 16.0,
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            context
-                                .read<AuthBloc>()
-                                .add(const AuthEventShouldRegister());
-                          },
-                          child: const Text(
-                              "Don't have an account yet? Register Now"),
-                        ),
-                      ],
+        body: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  const Text(
+                    'Please log in to your account in order to create and interact with notes',
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  TextFormField(
+                    keyboardType: TextInputType.emailAddress,
+                    controller: _email,
+                    enableSuggestions: false,
+                    autocorrect: false,
+                    validator: _validator,
+                    decoration: const InputDecoration(
+                      hintText: 'Email',
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(width: 1, color: Colors.black),
+                      ),
                     ),
-                  );
-                default:
-                  // ignore: prefer_const_constructors
-                  return Center(
-                    child: const CircularProgressIndicator(),
-                  );
-              }
-            }),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  TextFormField(
+                    controller: _password,
+                    obscureText: true,
+                    enableSuggestions: false,
+                    autocorrect: false,
+                    validator: _validator,
+                    decoration: const InputDecoration(
+                      hintText: 'Password',
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(width: 1, color: Colors.black),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        _login();
+                      }
+                    },
+                    child: const Text('Login', style: TextStyle(fontSize: 16)),
+                  ),
+                  const SizedBox(
+                    height: 16.0,
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      context
+                          .read<AuthBloc>()
+                          .add(const AuthEventForgotPassword());
+                    },
+                    child: const Text("Forgot password? Reset it here"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      context
+                          .read<AuthBloc>()
+                          .add(const AuthEventShouldRegister());
+                    },
+                    child:
+                        const Text("Don't have an account yet? Register Now"),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
+  }
+
+  String? _validator(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'This filed can not be empty';
+    }
+    return null;
   }
 
   void _login() async {
@@ -134,22 +147,8 @@ class _LoginPageState extends State<LoginPage> {
         );
   }
 
-  Future _initFireBase() async {
-    return AuthService.firebase().initialize();
-  }
-
   void _handleLoginExceptions(BuildContext context, AuthState state) async {
     if (state is AuthStateLoggedOut) {
-      final closeDialog = _closeDialogHandle;
-
-      if (!state.isLoading && closeDialog != null) {
-        closeDialog();
-        _closeDialogHandle = null;
-      } else if (state.isLoading && closeDialog == null) {
-        _closeDialogHandle =
-            showLoadingDialog(context: context, text: 'Loading...');
-      }
-
       if (state.exception is InvalidEmailAuthException) {
         await showErrorDialog(
             context: context,

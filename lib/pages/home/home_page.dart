@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_notes/helpers/loading/loading_screen.dart';
+import 'package:my_notes/pages/forgot_password/forgot_password_page.dart';
 import 'package:my_notes/pages/loading/loading_page.dart';
 import 'package:my_notes/pages/login/login_page.dart';
 import 'package:my_notes/pages/notes/notes_page.dart';
@@ -16,7 +18,17 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     context.read<AuthBloc>().add(const AuthEventInitialize());
-    return BlocBuilder<AuthBloc, AuthState>(
+    return BlocConsumer<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state.isLoading) {
+          LoadingScreen().show(
+            context: context,
+            text: state.loadingText ?? 'Please wait a moment',
+          );
+        } else {
+          LoadingScreen().hide();
+        }
+      },
       builder: (context, state) {
         if (state is AuthStateLoggedIn) {
           return const NotesPage();
@@ -29,6 +41,9 @@ class HomePage extends StatelessWidget {
         }
         if (state is AuthStateRegistering) {
           return const RegisterPage();
+        }
+        if (state is AuthStateForgotPassword) {
+          return const ForgotPasswordPage();
         }
         return const LoadingPage();
       },
