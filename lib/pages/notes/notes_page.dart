@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:my_notes/utils/constants/routes.dart';
 import 'package:my_notes/pages/notes/components/add_note_button.dart';
@@ -21,17 +23,39 @@ class _NotesPageState extends State<NotesPage> {
   String get userId => AuthService.firebase().currentUser!.id;
   late final TextEditingController _controller;
 
+  Timer? debouncer;
+
   @override
   void initState() {
     _notesService = FirebaseCloudStorage();
     _controller = TextEditingController();
+    _controller.addListener(() {
+      if (_controller.text.isNotEmpty) {
+        debounce(() {
+          setState(() {});
+        });
+      } else {
+        setState(() {});
+      }
+    });
     super.initState();
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    debouncer?.cancel();
     super.dispose();
+  }
+
+  void debounce(
+    VoidCallback callback, {
+    Duration duration = const Duration(milliseconds: 1000),
+  }) {
+    if (debouncer != null) {
+      debouncer!.cancel();
+    }
+    debouncer = Timer(duration, callback);
   }
 
   @override
@@ -39,24 +63,32 @@ class _NotesPageState extends State<NotesPage> {
     return Scaffold(
         appBar: AppBar(
           title: TextFormField(
+            textInputAction: TextInputAction.search,
+            onFieldSubmitted: (value) {
+              if (_controller.text.isNotEmpty) {
+                setState(() {});
+              }
+            },
+            cursorColor: Colors.white,
+            style: TextStyle(color: Colors.white),
             controller: _controller,
             decoration: InputDecoration(
-              border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: Colors.white)),
-              filled: true,
-              fillColor: Colors.white,
+              border: InputBorder.none,
               hintText: 'Search notes',
+              hintStyle: const TextStyle(color: Colors.white),
               suffixIcon: IconButton(
-                icon: const Icon(Icons.search),
-                onPressed: () {},
+                icon: const Icon(
+                  Icons.search,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  if (_controller.text.isNotEmpty) {
+                    setState(() {});
+                  }
+                },
               ),
-              enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: Colors.white)),
-              focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: Colors.white)),
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
             ),
           ),
           actions: [
