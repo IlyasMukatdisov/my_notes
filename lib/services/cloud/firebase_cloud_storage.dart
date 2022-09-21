@@ -7,19 +7,26 @@ class FirebaseCloudStorage {
   final notes = FirebaseFirestore.instance.collection(notesCollection);
 
   Stream<Iterable<CloudNote>> allNotes({required String ownerUserId}) => notes
-      .orderBy(noteDateName, descending: true)
+      .where(ownerUserIdFieldName, isEqualTo: ownerUserId)
+      .orderBy(noteDateFieldName, descending: true)
       .snapshots()
       .map((collection) =>
-          collection.docs.map((doc) => CloudNote.fromSnapshot(doc)).where(
-                (note) => note.ownerUserId == ownerUserId,
-              ));
+          collection.docs.map((doc) => CloudNote.fromSnapshot(doc)));
+
+  // Stream<Iterable<CloudNote>> searchNotes(
+  //     {required String ownerUserId, required String query}) {
+  //   final allUserNotes = allNotes(ownerUserId: ownerUserId);
+  //   for(var note in allUserNotes){
+
+  //   }
+  // }
 
   Future<CloudNote> createNewNote({required String ownerUserId}) async {
     DateTime now = DateTime.now();
     final document = await notes.add({
       ownerUserIdFieldName: ownerUserId,
       textFieldName: '',
-      noteDateName: now.toString()
+      noteDateFieldName: now.toString()
     });
     final fetchedNote = await document.get();
     return CloudNote(
@@ -47,21 +54,6 @@ class FirebaseCloudStorage {
       await notes.doc(documentId).delete();
     } catch (e) {
       throw CouldNotDeleteNoteException();
-    }
-  }
-
-  Future<Iterable<CloudNote>> getNotes({required String ownerUserId}) async {
-    try {
-      return await notes
-          .where(ownerUserIdFieldName, isEqualTo: ownerUserId)
-          .get()
-          .then(
-            (value) => value.docs.map(
-              (doc) => CloudNote.fromSnapshot(doc),
-            ),
-          );
-    } catch (e) {
-      throw CouldNotGetAllNoteException();
     }
   }
 

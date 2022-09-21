@@ -1,4 +1,4 @@
+const notesCollection = 'notes';
 const ownerUserIdFieldName = 'user_id';
 const textFieldName = 'text';
-const notesCollection = 'notes';
-const noteDateName = 'note_date';
+const noteDateFieldName = 'note_date';
