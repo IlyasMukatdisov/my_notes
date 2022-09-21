@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:my_notes/utils/constants/routes.dart';
 import 'package:my_notes/pages/notes/components/add_note_button.dart';
@@ -19,6 +21,8 @@ class NotesPage extends StatefulWidget {
 class _NotesPageState extends State<NotesPage> {
   late final FirebaseCloudStorage _notesService;
   String get userId => AuthService.firebase().currentUser!.id;
+  String _query = '';
+  Timer? debouncer;
 
   @override
   void initState() {
@@ -28,14 +32,42 @@ class _NotesPageState extends State<NotesPage> {
 
   @override
   void dispose() {
+    debouncer?.cancel();
     super.dispose();
+  }
+
+  void debounce(
+    VoidCallback callback, {
+    Duration duration = const Duration(milliseconds: 800),
+  }) {
+    if (debouncer != null) {
+      debouncer!.cancel();
+    }
+    debouncer = Timer(duration, callback);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('My Notes'),
+          title: TextField(
+            textInputAction: TextInputAction.search,
+            onChanged: (value) => debounce(() {
+              setState(() {
+                _query = value;
+              });
+            }),
+            style: const TextStyle(color: Colors.white),
+            cursorColor: Colors.white,
+            decoration: const InputDecoration(
+                border: InputBorder.none,
+                prefixIcon: Icon(
+                  Icons.search,
+                  color: Colors.white,
+                ),
+                hintText: 'Search notes',
+                hintStyle: TextStyle(color: Colors.white54)),
+          ),
           actions: const [
             AddNoteButton(),
             NotePopUpMenu(),
@@ -51,6 +83,7 @@ class _NotesPageState extends State<NotesPage> {
                   final notes = snapshot.data as Iterable<CloudNote>;
                   return notes.isNotEmpty
                       ? NotesListView(
+                          searchQuery: _query,
                           notes: notes,
                           onDeleteNote: (note) async {
                             await _notesService.deleteNote(
@@ -83,5 +116,4 @@ class _NotesPageState extends State<NotesPage> {
           },
         ));
   }
-
 }

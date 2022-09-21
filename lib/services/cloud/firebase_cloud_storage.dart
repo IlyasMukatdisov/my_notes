@@ -13,13 +13,6 @@ class FirebaseCloudStorage {
       .map((collection) =>
           collection.docs.map((doc) => CloudNote.fromSnapshot(doc)));
 
-  // Stream<Iterable<CloudNote>> searchNotes(
-  //     {required String ownerUserId, required String query}) {
-  //   final allUserNotes = allNotes(ownerUserId: ownerUserId);
-  //   for(var note in allUserNotes){
-
-  //   }
-  // }
 
   Future<CloudNote> createNewNote({required String ownerUserId}) async {
     DateTime now = DateTime.now();
